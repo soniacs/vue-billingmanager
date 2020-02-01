@@ -27,6 +27,7 @@
       @add:billing="addBillingItem"
     />
     <DepositForm 
+      :activeMonth="activeMonth"
       :showDepositForm="showDepositForm" 
       :users="users" 
       :depositItems="depositItems" 
@@ -107,14 +108,21 @@
             month: "December 2019"
           },
           {
-            id: 5,
+            id: 6,
             description: 'Condomínio',
             value: 66.43,
             users: [1,2,3],
             month: "March 2020"
           },
         ],
-        depositItems: [],
+        depositItems: [
+          {
+            id: 1,
+            value: 100,
+            user: 1,
+            date: "January 2020"
+          },
+        ],
       };
     },
     created: function () {

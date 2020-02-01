@@ -36,6 +36,7 @@
 	export default {
     name: 'DepositForm',
     props: {
+      activeMonth: String,
       showDepositForm: Boolean,
       users: Array,
       depositItems: Array,
@@ -46,7 +47,7 @@
         deposit: {
           user: "",
           value: 0,
-          date: "",
+          date: this.activeMonth,
         }
 
       };
@@ -57,7 +58,7 @@
         this.deposit = {
           user: "",
           value: 0,
-          date: "",
+          date: this.activeMonth,
         }
       },
     }

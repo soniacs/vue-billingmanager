@@ -3,7 +3,7 @@
     <div class="flex-small" v-for="user in users" :key="user.id">
       <h5>{{ user.name }}</h5>
       <div><strong>Debt:</strong> {{ userDebt(user.id) }}</div>
-      <div><strong>Deposits:</strong> {{ userDepositsTotal(user.id) }}</div>
+      <div><strong>Deposits:</strong> {{ userDepositsByMonth(user.id) }}</div>
 
       <ul class="user-deposits">
         <li v-for="deposit in userDeposits(user.id)" :key="deposit.id">
@@ -41,17 +41,26 @@
         })
         return items
       },
+      userDepositsByMonth: function(userId) {
+        let userDepositsTotal = 0
+        for (let deposit of this.depositItems) {
+          if(deposit.user === userId && deposit.date === this.activeMonth) {
+            userDepositsTotal += parseFloat(deposit.value)
+          }
+        }
+        return userDepositsTotal
+      },
       userDepositsTotal: function(userId) {
         let userDepositsTotal = 0
         for (let deposit of this.depositItems) {
-          if(deposit.user === userId) {
+          if(deposit.user === userId && this.monthIsActiveOrPrevious(deposit.date)) {
             userDepositsTotal += parseFloat(deposit.value)
           }
         }
         return userDepositsTotal
       },
       userDebt: function(userId) {
-        //const activeMonthObj = this.monthStringToObject(this.activeMonth)
+        const userDeposits = this.userDepositsTotal(userId)
         let userDebt = 0
         for (let billing of this.billingItems) {
           // show debt from this month and previous months
@@ -59,7 +68,7 @@
             userDebt += (billing.value/billing.users.length)
           }
         }
-        return this.roundNumber(userDebt)
+        return this.roundNumber(userDebt - userDeposits)
       }
     },
   };
