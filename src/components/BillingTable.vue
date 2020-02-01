@@ -46,21 +46,19 @@
     },
     computed: {
         billingItemsbyMonth: function() {
-            var items = this.billingItems.filter(obj => {
+            return this.billingItems.filter(obj => {
                 return obj.month === this.activeMonth
             })
-            return items
         },
     },
     methods: {
-        
         getUserValue: function(billing, userId) {
             const userValue = this.roundNumber(billing.value / billing.users.length);
             return billing.users.includes(userId) ? userValue : 0
         },
         getUserTotal: function(userId) {
             let userTotal = 0
-            for (let billing of this.billingItems) {
+            for (let billing of this.billingItemsbyMonth) {
                 if(billing.users.includes(userId)) {
                     userTotal += (billing.value/billing.users.length)
                 }

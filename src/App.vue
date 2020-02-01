@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <Navigation 
+      :activeMonth="activeMonth" 
       v-on:toggle-billing-form="showBillingForm = !showBillingForm" 
       v-on:toggle-deposits-form="showDepositForm = !showDepositForm"
     />
@@ -51,7 +52,8 @@
       return {
         showBillingForm: false,
         showDepositForm: false,
-        activeMonth: "January 2020",
+        activeMonth: "",
+        monthNames: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
         users: [
           {
             id: 1,
@@ -98,6 +100,11 @@
         ],
         depositItems: [],
       };
+    },
+    created: function () {
+      // set current month as active month
+      var today = new Date()
+      return this.activeMonth = this.monthNames[today.getMonth()] + ' ' + today.getFullYear()
     },
     methods: {
       addBillingItem(billing, hideForm = true) {

@@ -2,7 +2,7 @@
   <nav class="navigation margin-bottom">
     <div class="month-menu">
       <button>&lt;</button>
-      <span class="active">January 2020</span>
+      <span class="active">{{ activeMonth }}</span>
       <button>&gt;</button>
     </div>
     <div class="actions">
@@ -15,6 +15,9 @@
 <script>
   export default {
     name: 'Navigation',
+    props: {
+      activeMonth: String,
+    },
   };
 </script>
 
