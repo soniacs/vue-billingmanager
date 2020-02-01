@@ -3,9 +3,12 @@
     <Navigation 
       :activeMonth="activeMonth" 
       v-on:toggle-billing-form="showBillingForm = !showBillingForm" 
-      v-on:toggle-deposits-form="showDepositForm = !showDepositForm"
+      v-on:toggle-deposits-form="showDepositForm = !showDepositForm" 
+      v-on:prev-month="goToPrevMonth" 
+      v-on:next-month="goToNextMonth" 
     />
     <UsersTransactions 
+      :activeMonth="activeMonth" 
       :users="users" 
       :billingItems="billingItems" 
       :depositItems="depositItems" 
@@ -53,7 +56,6 @@
         showBillingForm: false,
         showDepositForm: false,
         activeMonth: "",
-        monthNames: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
         users: [
           {
             id: 1,
@@ -97,6 +99,20 @@
             users: [1,2,3],
             month: "February 2020"
           },
+          {
+            id: 5,
+            description: 'Condomínio',
+            value: 66.43,
+            users: [1,2,3],
+            month: "December 2019"
+          },
+          {
+            id: 5,
+            description: 'Condomínio',
+            value: 66.43,
+            users: [1,2,3],
+            month: "March 2020"
+          },
         ],
         depositItems: [],
       };
@@ -104,9 +120,45 @@
     created: function () {
       // set current month as active month
       var today = new Date()
-      return this.activeMonth = this.monthNames[today.getMonth()] + ' ' + today.getFullYear()
+      return this.activeMonth = this.formatMonth(today.getMonth(), today.getFullYear())      
+    },
+    computed: {
+        billingItemsbyMonth: function() {
+            return this.billingItems.filter(obj => {
+                return obj.month === this.activeMonth
+            })
+        },
     },
     methods: {
+      monthExists(month) {
+        const monthBillings = this.billingItems.filter(obj => {
+          return obj.month === month
+        })
+        return monthBillings.length ? true : false
+      },
+      goToMonth(month) {
+        return this.monthExists(month) ? this.activeMonth = month : false
+      },
+      goToPrevMonth() {
+        const monthObj = this.monthStringToObject(this.activeMonth)
+        let prevMonthIndex = monthObj.month - 1
+        let monthYear = monthObj.year  
+        if(prevMonthIndex < 0) {
+          prevMonthIndex = this.monthNames.length - 1
+          monthYear -= 1
+        }
+        this.goToMonth(this.formatMonth(prevMonthIndex, monthYear))
+      },
+      goToNextMonth() {
+        const monthObj = this.monthStringToObject(this.activeMonth)
+        let nextMonthIndex = monthObj.month + 1
+        let monthYear = monthObj.year  
+        if(nextMonthIndex > this.monthNames.length - 1) {
+          nextMonthIndex = 0
+          monthYear += 1
+        }
+        this.goToMonth(this.formatMonth(nextMonthIndex, monthYear))
+      },
       addBillingItem(billing, hideForm = true) {
         const id = this.setNewId(this.billingItems);
         const newBilling = { ...billing, id };

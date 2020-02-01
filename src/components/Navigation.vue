@@ -1,9 +1,9 @@
 <template>
   <nav class="navigation margin-bottom">
     <div class="month-menu">
-      <button>&lt;</button>
+      <button v-on:click="$emit('prev-month')">&lt;</button>
       <span class="active">{{ activeMonth }}</span>
-      <button>&gt;</button>
+      <button v-on:click="$emit('next-month')">&gt;</button>
     </div>
     <div class="actions">
       <button v-on:click="$emit('toggle-billing-form')">Add Billing</button>
