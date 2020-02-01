@@ -1,5 +1,10 @@
 <template>
   <div id="app">
+    <UsersTransactions 
+      :users="users" 
+      :billingItems="billingItems" 
+      :depositItems="depositItems" 
+    />
     <BillingTable 
       :billingItems="billingItems" 
       :users="users" 
@@ -9,18 +14,27 @@
       :users="users" 
       @add:billing="addBillingItem"
     />
+    <DepositsForm 
+      :users="users" 
+      :depositItems="depositItems" 
+      @add:deposit="addDepositItem"
+    />
   </div>
 </template>
 
 <script>
   import BillingTable from './components/BillingTable.vue'
   import BillingForm from './components/BillingForm.vue'
+  import DepositsForm from './components/DepositsForm.vue'
+  import UsersTransactions from './components/UsersTransactions.vue'
 
   export default {
     name: 'app',
     components: {
       BillingTable,
       BillingForm,
+      DepositsForm,
+      UsersTransactions,
     },
     data() {
       return {
@@ -57,20 +71,23 @@
             value: 66.43,
             users: [1,2,3],
           },
-        ]
+        ],
+        depositItems: [],
       };
     },
     methods: {
       addBillingItem(billing) {
-        const lastId = this.billingItems.length > 0
-          ? this.billingItems[this.billingItems.length - 1].id
-          : 0;
-        const id = lastId + 1;
+        const id = this.setNewId(this.billingItems);
         const newBilling = { ...billing, id };
         this.billingItems = [...this.billingItems, newBilling];
       },
       deleteBillingItem(id) {
         this.billingItems = this.billingItems.filter(billing => billing.id !== id);
+      },
+      addDepositItem(deposit) {
+        const id = this.setNewId(this.depositItems);
+        const newDeposit = { ...deposit, id };
+        this.depositItems = [...this.depositItems, newDeposit];
       },
     }
   };

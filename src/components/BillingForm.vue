@@ -1,6 +1,7 @@
 <template>
   <div class="billing-form">
-    <form v-on:submit.prevent="submitForm">
+    <button v-on:click="show_form = !show_form">Add Billing</button>
+    <form v-if="show_form" v-on:submit.prevent="submitForm">
         <div class="input">
             <label>Description</label>
             <input 
@@ -21,6 +22,8 @@
               <li v-for="user in users" :key="user.id">
                 <input 
                   type="checkbox"
+                  v-bind:value="user.id"
+                  v-model="billing.users"
                 > {{ user.name }}
               </li>
             </ul>
@@ -38,16 +41,23 @@
     },
     data() {
       return {
+        show_form: false,
         billing: {
           description: "",
           value: 0,
-          users: [1,2,3]
+          users: []
         }
       };
     },
     methods: {
       submitForm() {
         this.$emit("add:billing", this.billing);
+        this.show_form = false;
+        this.billing = {
+          description: "",
+          value: 0,
+          users: []
+        }
       },
     }
   };
