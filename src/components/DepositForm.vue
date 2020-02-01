@@ -1,7 +1,6 @@
 <template>
-  <div class="deposits-form">
-    <button v-on:click="show_form = !show_form">Add Deposit</button>
-    <form v-if="show_form" v-on:submit.prevent="submitForm">
+  <div v-if="showDepositForm" class="deposits-form modal-form">
+    <form v-on:submit.prevent="submitForm">
       <div class="input">
           <label>User</label>
             <ul>
@@ -35,14 +34,15 @@
 
 <script>
 	export default {
-    name: 'DepositsForm',
+    name: 'DepositForm',
     props: {
+      showDepositForm: Boolean,
       users: Array,
       depositItems: Array,
     },
     data() {
       return {
-        show_form: true,
+        show_form: false,
         deposit: {
           user: "",
           value: 0,
@@ -54,7 +54,6 @@
     methods: {
       submitForm() {
         this.$emit("add:deposit", this.deposit);
-        this.show_form = false;
         this.deposit = {
           user: "",
           value: 0,

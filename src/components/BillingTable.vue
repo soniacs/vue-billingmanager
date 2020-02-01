@@ -12,7 +12,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr v-for="billing in billingItems" :key="billing.id">
+            <tr v-for="billing in billingItemsbyMonth" :key="billing.id">
                 <td>
                     <button @click="$emit('delete:billing', billing.id)">Remove</button>
                 </td>
@@ -41,9 +41,19 @@
     name: 'BillingTable',
     props: {
       billingItems: Array,
-      users: Array
+      users: Array,
+      activeMonth: String,
+    },
+    computed: {
+        billingItemsbyMonth: function() {
+            var items = this.billingItems.filter(obj => {
+                return obj.month === this.activeMonth
+            })
+            return items
+        },
     },
     methods: {
+        
         getUserValue: function(billing, userId) {
             const userValue = this.roundNumber(billing.value / billing.users.length);
             return billing.users.includes(userId) ? userValue : 0

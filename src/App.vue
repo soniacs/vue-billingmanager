@@ -1,20 +1,29 @@
 <template>
   <div id="app">
+    <Navigation 
+      v-on:toggle-billing-form="showBillingForm = !showBillingForm" 
+      v-on:toggle-deposits-form="showDepositForm = !showDepositForm"
+    />
     <UsersTransactions 
       :users="users" 
       :billingItems="billingItems" 
       :depositItems="depositItems" 
+      @delete:deposit="deleteDepositItem" 
     />
     <BillingTable 
+      :activeMonth="activeMonth" 
       :billingItems="billingItems" 
       :users="users" 
       @delete:billing="deleteBillingItem"
     />
     <BillingForm 
+      :showBillingForm="showBillingForm" 
+      :activeMonth="activeMonth" 
       :users="users" 
       @add:billing="addBillingItem"
     />
-    <DepositsForm 
+    <DepositForm 
+      :showDepositForm="showDepositForm" 
       :users="users" 
       :depositItems="depositItems" 
       @add:deposit="addDepositItem"
@@ -25,19 +34,24 @@
 <script>
   import BillingTable from './components/BillingTable.vue'
   import BillingForm from './components/BillingForm.vue'
-  import DepositsForm from './components/DepositsForm.vue'
+  import DepositForm from './components/DepositForm.vue'
   import UsersTransactions from './components/UsersTransactions.vue'
+  import Navigation from './components/Navigation.vue'
 
   export default {
     name: 'app',
     components: {
       BillingTable,
       BillingForm,
-      DepositsForm,
+      DepositForm,
       UsersTransactions,
+      Navigation,
     },
     data() {
       return {
+        showBillingForm: false,
+        showDepositForm: false,
+        activeMonth: "January 2020",
         users: [
           {
             id: 1,
@@ -58,36 +72,55 @@
             description: 'Casa',
             value: 303.26,
             users: [1,2,3],
+            month: "January 2020"
           },
           {
             id: 2,
             description: 'Seguro',
             value: 24.69,
             users: [1,2],
+            month: "January 2020"
           },
           {
             id: 3,
             description: 'Condomínio',
             value: 66.43,
             users: [1,2,3],
+            month: "January 2020"
+          },
+          {
+            id: 4,
+            description: 'Condomínio',
+            value: 66.43,
+            users: [1,2,3],
+            month: "February 2020"
           },
         ],
         depositItems: [],
       };
     },
     methods: {
-      addBillingItem(billing) {
+      addBillingItem(billing, hideForm = true) {
         const id = this.setNewId(this.billingItems);
         const newBilling = { ...billing, id };
         this.billingItems = [...this.billingItems, newBilling];
+        if(hideForm) {
+          this.showBillingForm = false
+        }
       },
       deleteBillingItem(id) {
         this.billingItems = this.billingItems.filter(billing => billing.id !== id);
       },
-      addDepositItem(deposit) {
+      addDepositItem(deposit, hideForm = true) {
         const id = this.setNewId(this.depositItems);
         const newDeposit = { ...deposit, id };
         this.depositItems = [...this.depositItems, newDeposit];
+        if(hideForm) {
+          this.showDepositForm = false
+        }
+      },
+      deleteDepositItem(id) {
+        this.depositItems = this.depositItems.filter(deposit => deposit.id !== id);
       },
     }
   };
@@ -95,4 +128,15 @@
 
 <style>
   body { padding: 20px 40px; }
+
+  .modal-form {
+    position: fixed;
+    top: 100px;
+    left: 40px;
+    right: 40px;
+    z-index: 100;
+    border: 1px solid #ccc;
+    background: white;
+    padding: 20px;
+  }
 </style>
