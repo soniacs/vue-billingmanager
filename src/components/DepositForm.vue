@@ -1,5 +1,5 @@
 <template>
-  <div v-if="showDepositForm" class="deposits-form modal-form">
+  <div v-if="showDepositForm" class="deposits-form modal-panel">
     <form v-on:submit.prevent="submitForm">
       <div class="input">
           <label>User</label>
@@ -8,7 +8,7 @@
                 <input 
                   type="radio"
                   v-bind:value="user.id"
-                  v-model="deposit.user"
+                  v-model="depositItem.user"
                 > {{ user.name }}
               </li>
             </ul>
@@ -17,17 +17,24 @@
             <label>Value</label>
             <input 
               type="text" 
-              v-model="deposit.value" 
+              v-model="depositItem.value" 
             >
         </div>
         <div class="input">
-            <label>Date</label>
+            <label>Month</label>
             <input 
               type="text" 
-              v-model="deposit.date" 
+              v-model="depositItem.month" 
             >
         </div>
-        <button>Add Deposit</button>
+        <div class="form-submit">
+          <a class="button muted-button" v-on:click="$emit('toggle-deposits-form')">Cancel</a>
+          &nbsp; 
+          <button>
+            <span v-if="itemToEdit">Edit Deposit</span>
+            <span v-if="!itemToEdit">Add Deposit</span>
+          </button>
+        </div>
     </form>
   </div>
 </template>
@@ -39,29 +46,46 @@
       activeMonth: String,
       showDepositForm: Boolean,
       users: Array,
-      depositItems: Array,
+      itemToEdit: Object,
     },
     data() {
       return {
-        show_form: false,
-        deposit: {
+        depositForm: {
           user: "",
           value: 0,
-          date: this.activeMonth,
+          month: this.activeMonth,
+        },
+        depositItem: {
+          user: "",
+          value: 0,
+          month: this.activeMonth,
         }
-
       };
     },
     methods: {
       submitForm() {
-        this.$emit("add:deposit", this.deposit);
-        this.deposit = {
-          user: "",
-          value: 0,
-          date: this.activeMonth,
+        if(this.itemToEdit) {
+          this.$emit("edit:depositItem", this.depositItem);
+        } else {
+          this.$emit("add:depositItem", this.depositItem);
+          this.depositItem = this.depositForm;
         }
       },
-    }
+    },
+    watch: {
+      itemToEdit: function(val) {
+        // check if there's an item to edit
+        // to define edit or add mode
+        if(val) {
+          this.depositItem = this.itemToEdit
+        } else {
+          this.depositItem = this.depositForm
+        }
+      },
+      activeMonth: function(val) {
+        this.depositItem.month = val
+      },
+    },
   };
 </script>
 
