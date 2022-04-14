@@ -1,13 +1,7 @@
 <template>
   <div v-if="showBillingForm" class="billing-form modal-panel">
     <form v-on:submit.prevent="submitForm">
-      <!-- <p><strong>Billing Month:</strong> {{ billingItem.month }}</p> -->
-      <div class="input">
-        <input 
-          type="hidden" 
-          v-model="billingItem.month" 
-        >
-      </div>
+      <input type="hidden" v-model="billingItem.month">
       <div class="input">
         <label>Description</label>
         <input 

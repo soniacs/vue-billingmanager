@@ -1,6 +1,7 @@
 <template>
   <div v-if="showDepositForm" class="deposits-form modal-panel">
     <form v-on:submit.prevent="submitForm">
+      <input type="hidden" v-model="depositItem.month">
       <div class="input">
           <label>User</label>
             <ul>
@@ -18,13 +19,6 @@
             <input 
               type="text" 
               v-model="depositItem.value" 
-            >
-        </div>
-        <div class="input">
-            <label>Month</label>
-            <input 
-              type="text" 
-              v-model="depositItem.month" 
             >
         </div>
         <div class="form-submit">
