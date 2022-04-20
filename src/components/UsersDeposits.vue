@@ -1,15 +1,19 @@
 <template>
   <div class="users-list margin-bottom flex-row">
-    <div class="flex-small" v-for="user in users" :key="user.id">
+    <div class="flex-small" v-for="user in activeUsers()" :key="user.id">
       <h5>{{ user.name }}</h5>
       <div><strong>Debt:</strong> {{ userDebt(user.id) }}€</div>
       <div><strong>Deposits:</strong> {{ userDepositsByMonthTotal(user.id) }}€</div>
 
       <div class="user-deposits" v-if="userDepositsByMonth(user.id).length > 0">
-        <a @click="showDeposits(user.id)">View Deposits</a>
+        <a @click="showDeposits(user.id)">
+          <span v-if="activeUserDeposits === user.id">Close Deposits</span>
+          <span v-if="activeUserDeposits !== user.id">View Deposits</span>
+        </a>
         <ul class="user-deposits-dropdown" v-if="activeUserDeposits === user.id">
           <li v-for="deposit in userDepositsByMonth(user.id)" :key="deposit.id">
-            {{ deposit.value }}€ <a @click="$emit('edit:deposit', deposit.id)">edit</a> | <a @click="$emit('delete:deposit', deposit.id)">remove</a>
+            {{ deposit.value }}€ <span v-if="deposit.description">– {{ deposit.description }}</span>
+            <br><a @click="$emit('edit:deposit', deposit.id)">edit</a> | <a @click="$emit('delete:deposit', deposit.id)">remove</a>
           </li>
         </ul>
       </div>
@@ -19,7 +23,7 @@
 
 <script>
   export default {
-    name: 'UsersList',
+    name: 'UsersDeposits',
     props: {
       users: Array,
       billingItems: Array,
@@ -32,6 +36,9 @@
       };
     },
     methods: {
+      activeUsers: function() {
+        return this.users.filter(user => user.active);
+      },
       monthIsActiveOrPrevious: function(month) {
         const activeMonthObj = this.monthStringToObject(this.activeMonth)
         const monthObj = this.monthStringToObject(month)
@@ -40,7 +47,7 @@
           return true
         } else if(monthObj.year < activeMonthObj.year) {
           return true
-        }  
+        }
       },
       userDepositsByMonth: function(userId) {
         let userDeposits = []

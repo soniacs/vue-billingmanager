@@ -25,6 +25,6 @@ Vue.mixin({
     },
     formatMonth(monthIndex, monthYear) {
       return this.monthNames[monthIndex] + ' ' + monthYear
-    }
+    },
   }
 })

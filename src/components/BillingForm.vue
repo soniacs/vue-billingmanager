@@ -68,12 +68,11 @@
     },
     methods: {
       submitForm() {
-        if(this.itemToEdit) {
-          this.$emit("edit:billingItem", this.billingItem);
-        } else {
+        if(!this.itemToEdit) {
           this.$emit("add:billingItem", this.billingItem);
           this.billingItem = this.billingForm;
         }
+        this.$emit('toggle-billing-form');
       },
     },
     watch: {

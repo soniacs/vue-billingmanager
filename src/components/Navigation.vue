@@ -8,6 +8,9 @@
     </div>
     <div class="actions">
       <button 
+        v-on:click="$emit('toggle-users-panel')" 
+        v-bind:class="{ 'accent-button': showUsersPanel }">Users</button>
+      <button 
         v-on:click="$emit('toggle-billing-form')" 
         v-bind:class="{ 'accent-button': showBillingForm }">Add Billing</button>
       <button 
@@ -24,6 +27,7 @@
       activeMonth: String,
       showBillingForm: Boolean,
       showDepositForm: Boolean,
+      showUsersPanel: Boolean,
     },
   };
 </script>

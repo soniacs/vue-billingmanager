@@ -4,8 +4,10 @@
       :activeMonth="activeMonth"
       :showBillingForm="showBillingForm" 
       :showDepositForm="showDepositForm" 
+      :showUsersPanel="showUsersPanel" 
       v-on:toggle-billing-form="showBillingForm = !showBillingForm" 
       v-on:toggle-deposits-form="showDepositForm = !showDepositForm" 
+      v-on:toggle-users-panel="showUsersPanel = !showUsersPanel" 
       v-on:prev-month="goToPrevMonth" 
       v-on:next-month="goToNextMonth" 
       v-on:current-month="goToCurrentMonth" 
@@ -31,7 +33,6 @@
       :users="users" 
       :itemToEdit="billingItemToEdit"
       @add:billingItem="addBillingItem" 
-      @edit:billingItem="editBillingItem" 
       v-on:toggle-billing-form="showBillingForm = !showBillingForm" 
     />
     <DepositForm 
@@ -40,8 +41,17 @@
       :users="users" 
       :itemToEdit="depositItemToEdit"
       @add:depositItem="addDepositItem" 
-      @edit:depositItem="editDepositItem" 
       v-on:toggle-deposits-form="showDepositForm = !showDepositForm" 
+    />
+    <UsersPanel 
+      :showUsersPanel="showUsersPanel" 
+      :users="users" 
+      :billingItems="billingItems" 
+      :depositItems="depositItems" 
+      @add:user="addUserItem" 
+      @delete:user="deleteUserItem"
+      @activate:user="activateUserItem" 
+      v-on:toggle-users-panel="showUsersPanel = !showUsersPanel" 
     />
   </div>
 </template>
@@ -51,6 +61,7 @@
   import BillingForm from './components/BillingForm.vue'
   import DepositForm from './components/DepositForm.vue'
   import UsersDeposits from './components/UsersDeposits.vue'
+  import UsersPanel from './components/UsersPanel.vue' 
   import Navigation from './components/Navigation.vue'
 
   export default {
@@ -60,99 +71,107 @@
       BillingForm,
       DepositForm,
       UsersDeposits,
+      UsersPanel,
       Navigation,
     },
     data() {
       return {
         showBillingForm: false,
         showDepositForm: false,
+        showUsersPanel: false,
         activeMonth: "",
+        billingItemToEdit: null,
+        depositItemToEdit: null,
+        // BD
         users: [
           {
             id: 1,
             name: 'Sónia',
+            active: true,
           },
           {
             id: 2,
             name: 'Marcos',
+            active: true,
           },
           {
             id: 3,
             name: 'Susana',
+            active: true,
           },
         ],
         billingItems: [
           {
             id: 1,
             description: 'Casa',
-            value: 303.26,
+            value: 600,
             users: [1,2,3],
             month: "April 2022"
           },
           {
             id: 2,
             description: 'Seguro',
-            value: 24.69,
+            value: 40,
             users: [1,2],
             month: "January 2022"
           },
           {
             id: 3,
             description: 'Condomínio',
-            value: 66.43,
+            value: 90,
             users: [1,2,3],
             month: "January 2022"
           },
           {
             id: 4,
             description: 'Condomínio',
-            value: 66.43,
+            value: 30,
             users: [1,2,3],
             month: "February 2022"
           },
           {
             id: 5,
             description: 'Condomínio',
-            value: 66.43,
+            value: 30,
             users: [1,2,3],
             month: "December 2021"
           },
           {
             id: 6,
             description: 'Condomínio',
-            value: 66.43,
+            value: 30,
             users: [1,2,3],
             month: "April 2022"
           },
         ],
-        billingItemToEdit: null,
         depositItems: [
           {
             id: 1,
             value: 100,
             user: 1,
-            month: "January 2022"
+            month: "January 2022",
+            description: 'dia 2',
           },
           {
             id: 2,
             value: 100,
             user: 1,
-            month: "April 2022"
+            month: "April 2022",
+            description: 'netflix',
           },
         ],
-        depositItemToEdit: null,
       };
     },
     created: function () {
       // set current month as active month
-      this.goToCurrentMonth()
+      this.goToCurrentMonth();
     },
     computed: {
-        billingItemsbyMonth: function() {
-            return this.billingItems.filter(obj => {
-                return obj.month === this.activeMonth
-            })
-        },
+      billingItemsbyMonth: function() {
+        return this.billingItems.filter(obj => {
+          return obj.month === this.activeMonth
+        })
+      },
     },
     methods: {
       // DATES
@@ -192,13 +211,10 @@
       },
 
       // BILLINGS
-      addBillingItem(billing, hideForm = true) {
+      addBillingItem(billing) {
         const id = this.setNewId(this.billingItems);
         const newBilling = { ...billing, id };
         this.billingItems = [...this.billingItems, newBilling];
-        if(hideForm) {
-          this.showBillingForm = false
-        }
       },
       deleteBillingItem(id) {
         this.billingItems = this.billingItems.filter(billing => billing.id !== id);
@@ -207,22 +223,12 @@
         this.showBillingForm = true;
         this.billingItemToEdit = this.billingItems.find(obj => obj.id == id)
       },
-      editBillingItem(billing, hideForm = true) {
-        var itemIndex = this.billingItems.findIndex(x => x.id == billing.id)
-        this.billingItems[itemIndex] = billing;
-        if(hideForm) {
-          this.showBillingForm = false
-        }
-      },
 
       // DEPOSITS
-      addDepositItem(deposit, hideForm = true) {
+      addDepositItem(deposit) {
         const id = this.setNewId(this.depositItems);
         const newDeposit = { ...deposit, id };
         this.depositItems = [...this.depositItems, newDeposit];
-        if(hideForm) {
-          this.showDepositForm = false
-        }
       },
       deleteDepositItem(id) {
         this.depositItems = this.depositItems.filter(deposit => deposit.id !== id);
@@ -231,13 +237,20 @@
         this.showDepositForm = true;
         this.depositItemToEdit = this.depositItems.find(obj => obj.id == id)
       },
-      editDepositItem(deposit, hideForm = true) {
-        var itemIndex = this.depositItems.findIndex(x => x.id == deposit.id)
-        this.depositItems[itemIndex] =deposit;
-        if(hideForm) {
-          this.showDepositForm = false
-        }
+
+      // USERS
+      addUserItem(user) {
+        const id = this.setNewId(this.users);
+        const newUser = { ...user, id };
+        this.users = [...this.users, newUser];
       },
+      deleteUserItem(id) {
+        this.users = this.users.filter(user => user.id !== id);
+      },
+      activateUserItem(id, activate) {
+        var userIndex = this.users.findIndex(x => x.id == id)
+        this.users[userIndex].active = activate;
+      }
     },
     watch: {
       showBillingForm: function(val) {
@@ -248,6 +261,7 @@
           // close other forms
           this.showDepositForm = false
           this.showUserDeposits = false
+          this.showUsersPanel = false
         }
       },
       showDepositForm: function(val) {
@@ -256,6 +270,15 @@
           this.depositItemToEdit = null
         } else {
           // close other forms
+          this.showBillingForm = false
+          this.showUsersPanel = false
+        }
+      },
+      showUsersPanel: function(val) {
+        if(val) {
+          // close other panels
+          this.showDepositForm = false
+          this.showUserDeposits = false
           this.showBillingForm = false
         }
       },

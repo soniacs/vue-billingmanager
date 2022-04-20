@@ -17,8 +17,16 @@
         <div class="input">
             <label>Value</label>
             <input 
-              type="text" 
+              type="number" 
+              step="0.01" 
               v-model="depositItem.value" 
+            >
+        </div>
+        <div class="input">
+            <label>Description</label>
+            <input 
+              type="text" 
+              v-model="depositItem.description" 
             >
         </div>
         <div class="form-submit">
@@ -45,25 +53,26 @@
     data() {
       return {
         depositForm: {
-          user: "",
+          user: 1,
           value: 0,
           month: this.activeMonth,
+          description: "",
         },
         depositItem: {
-          user: "",
+          user: 1,
           value: 0,
           month: this.activeMonth,
+          description: "",
         }
       };
     },
     methods: {
       submitForm() {
-        if(this.itemToEdit) {
-          this.$emit("edit:depositItem", this.depositItem);
-        } else {
+        if(!this.itemToEdit) {
           this.$emit("add:depositItem", this.depositItem);
           this.depositItem = this.depositForm;
         }
+        this.$emit('toggle-deposits-form');
       },
     },
     watch: {

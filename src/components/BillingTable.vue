@@ -6,7 +6,7 @@
               <th>Actions</th>
               <th>Description</th>
               <th>Value</th>
-              <th v-for="user in users" :key="user.id">
+              <th v-for="user in activeUsers()" :key="user.id">
                   {{ user.name }}
               </th>
           </tr>
@@ -20,7 +20,7 @@
           </td>
           <td>{{ billing.description }}</td>
           <td>{{ billing.value }}</td>
-          <td v-for="user in users" :key="user.id">
+          <td v-for="user in activeUsers()" :key="user.id">
             {{ getUserValue(billing, user.id) }}
           </td>
         </tr>
@@ -29,7 +29,7 @@
         <tr>
           <td colspan="2"><strong>Total</strong></td>
           <td>{{ getTotal() }}</td>
-          <td v-for="user in users" :key="user.id">
+          <td v-for="user in activeUsers()" :key="user.id">
             {{ getUserTotal(user.id) }}
           </td>
         </tr>
@@ -54,6 +54,9 @@
       },
     },
     methods: {
+      activeUsers: function() {
+        return this.users.filter(user => user.active);
+      },
       getUserValue: function(billing, userId) {
         const userValue = this.roundNumber(billing.value / billing.users.length);
         return billing.users.includes(userId) ? userValue : 0
